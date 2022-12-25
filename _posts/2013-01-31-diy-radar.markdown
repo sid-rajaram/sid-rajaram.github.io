@@ -1,0 +1,35 @@
+---
+layout: post
+title:  "Results from DIY Coffee Can Radar Build"
+date:   2013-01-31
+usemathjax: true
+---
+*I wrote up this post a long time ago and ported it over to this site.*
+
+I took a course on building a coffee can antenna (a "cantenna") radar system capable of sensing range, doppler, and synthetic aperture radar imaging. This was organized (and funded) by [Lincoln Labs](http://www.ll.mit.edu/) during MIT's Independent Activities Period in January of 2013. The project was originally developed by Dr. Greg Charvat, formerly at Lincoln Labs, whose [site](http://www.glcharvat.com/Dr._Gregory_L._Charvat_Projects/Home.html) has much more detailed information. Slides from the class, which contain a bill of materials and detailed step-by-step build instructions, are available on [MIT OpenCourseWare](http://ocw.mit.edu/resources/res-ll-003-build-a-small-radar-system-capable-of-sensing-range-doppler-and-synthetic-aperture-radar-imaging-january-iap-2011/index.htm). The final product (assembled by groups of 3 students) looks like this:
+
+| ![Final build](/assets/coffee_can_radar/radar_final.jpg) |
+|:--:|
+| Coffee can radar - final build |
+
+The two metal coffee cans act as circular waveguides for the antennas (one is to transmit, the other to receive). The antennas are monopole wire probes (see image below) that are attached to coaxial cables that carry the signal to and from the RF electronics. The distance between the wire probes and the back of the cans (where the blue wires connect to the cans in the image above) must be one quarter of the wavelength of the carrier frequency we use (2.4Ghz - the ISM band, also the frequency used by wifi networks), since there is a π shift when the signal is reflected off the back wall and π/2 shifts involved in traveling back and forth from the back wall at this length, adding to a total 2π shift, maximizing signal power.
+
+| ![Wire probe](/assets/coffee_can_radar/wire_probe.jpg) |
+|:--:|
+| Wire probe |
+
+A entire system layout is illustrated below (image taken from course slides):
+
+| ![System layout](/assets/coffee_can_radar/system_layout.png) |
+|:--:|
+| System layout |
+
+The device is capable of measuring Doppler (velocity), range (distance), and being used as a synthetic aperture radar (multiple range measurements used to reconstruct a 2D projected image) and I will go through the data from each.
+
+### Doppler
+
+Doppler mode is relatively simple - the transmit antenna puts out a constant sinusoidal wave at 2.4GHz. The radar Doppler shift frequency is 2.velocity/wavelength ([derivation](https://en.wikipedia.org/wiki/Doppler_radar#Frequency_variation)). The velocity here refers to the radial velocity component of the object and the wavelength is given by *c*/2.4GHz = 12.5cm, where *c* is the speed of light. Therefore, a car moving at 35mph would show a Doppler shift of roughly 250Hz, which is in the range to be picked up by a computer soundcard (the data acquisition device on this system was the microphone port on a laptop). Note however this is the Doppler shift, which means the actual signal being received at the antenna are sinusoids at a frequency of 2.4GHz +/- 250Hz. To modify this so that we only pick up the frequency shifts, we just multiply the received signal with the transmitted signal. Then due to the identity
+
+$$sin(A)sin(B) = \frac{1}{2}\cdot(cos(A-B) - cos(A+B))$$
+
+we will pick up the Doppler shift frequency as the sum or difference (depending on whether the imaged object is moving away from or towards the aperture). Either way we can filter out higher frequencies and only retain the Doppler shift frequencies in our signal. In the system layout figure above, the mixer does this multiplication of transmitted and received signals, and the low pass filter gets rid of the higher frequencies (which we need to prevent aliasing anyway). Shown to the side is a Doppler plot of me waving my hand at varying speeds in the direction of the radar aperture.
