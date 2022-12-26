@@ -6,7 +6,7 @@ usemathjax: true
 ---
 *I wrote up this post a long time ago and ported it over to this site.*
 
-I took a course on building a coffee can antenna (a "cantenna") radar system capable of sensing range, doppler, and synthetic aperture radar imaging. This was organized (and funded) by [Lincoln Labs](http://www.ll.mit.edu/) during MIT's Independent Activities Period in January of 2013. The project was originally developed by Dr. Greg Charvat, formerly at Lincoln Labs, whose [site](http://www.glcharvat.com/Dr._Gregory_L._Charvat_Projects/Home.html) has much more detailed information. Slides from the class, which contain a bill of materials and detailed step-by-step build instructions, are available on [MIT OpenCourseWare](http://ocw.mit.edu/resources/res-ll-003-build-a-small-radar-system-capable-of-sensing-range-doppler-and-synthetic-aperture-radar-imaging-january-iap-2011/index.htm). The final product (assembled by groups of 3 students) looks like this:
+I took a 4-day course on building a coffee can antenna (a "cantenna") radar system capable of sensing range, doppler, and synthetic aperture radar imaging. This was organized (and funded) by [Lincoln Labs](http://www.ll.mit.edu/) during MIT's Independent Activities Period in January of 2013. The project was originally developed by Dr. Greg Charvat, formerly at Lincoln Labs, whose [site](http://www.glcharvat.com/Dr._Gregory_L._Charvat_Projects/Home.html) has much more detailed information. Slides from the class, which contain a bill of materials and detailed step-by-step build instructions, are available on [MIT OpenCourseWare](http://ocw.mit.edu/resources/res-ll-003-build-a-small-radar-system-capable-of-sensing-range-doppler-and-synthetic-aperture-radar-imaging-january-iap-2011/index.htm). The final product (assembled by groups of 3 students) looks like this:
 
 | ![Final build](/assets/coffee_can_radar/radar_final.jpg) |
 |:--:|
@@ -32,4 +32,30 @@ Doppler mode is relatively simple - the transmit antenna puts out a constant sin
 
 $$sin(A)sin(B) = \frac{1}{2}\cdot(cos(A-B) - cos(A+B))$$
 
-we will pick up the Doppler shift frequency as the sum or difference (depending on whether the imaged object is moving away from or towards the aperture). Either way we can filter out higher frequencies and only retain the Doppler shift frequencies in our signal. In the system layout figure above, the mixer does this multiplication of transmitted and received signals, and the low pass filter gets rid of the higher frequencies (which we need to prevent aliasing anyway). Shown to the side is a Doppler plot of me waving my hand at varying speeds in the direction of the radar aperture.
+we will pick up the Doppler shift frequency as the sum or difference (depending on whether the imaged object is moving away from or towards the aperture). Either way we can filter out higher frequencies and only retain the Doppler shift frequencies in our signal. In the system layout figure above, the mixer does this multiplication of transmitted and received signals, and the low pass filter gets rid of the higher frequencies (which we need to prevent aliasing anyway). Shown below is a Doppler plot of me waving my hand with increasing speeds towards and away from the radar aperture - note that time is on the y-axis.
+
+| ![Doppler plot of hand waving](/assets/coffee_can_radar/hand_wave.png) |
+|:--:|
+| Doppler plot of hand waving |
+
+### Range
+
+Range measurements are a little more involved - the idea is to send out a pulsed waveform and see how long the signal takes to bounce back. In this implementation, the transmitter sends out little 20ms long chirped pulses, with the instantaneous frequency linearly increasing from 2.4Ghz to 2.48GHz. This was implemented with an IC that sends out linear voltage ramps to a voltage controlled oscillator. The signal is received back with some time delay and the distance to the object is just 2.delay/*c*. Theoretically, ranging would be done by running a matched filter, with the impulse response being the transmitted chirp, and looking for a peak. Practically that is hard (impossible?) to do at RF frequencies. What is done instead is a trick called *stretch processing* ([derivation](http://www.ece.uah.edu/courses/material/EE710-Merv/Stretch_11.pdf)). The idea is that multiplying the return signal with the transmitted signal will produce constant frequency sinusoids with the frequency proportional to the time delay, and the distance to the target. This only works if the received signal is picked up while the transmit is still going, but with 20ms pulses that should be the case for any reasonable distances. To calibrate our range measurements we walked up and down a 20 m hallway and produced the image below.
+
+| ![Range measurements of waking down a hallway](/assets/coffee_can_radar/corridor_walk.png) |
+|:--:|
+| Range measurements of waking down a hallway |
+
+With this calibrated, we then pointed it out on a street and performed ranging on passing cars (at 2am, in well below freezing temperatures), plotted below.
+
+| ![Range measurements of cars driving by](/assets/coffee_can_radar/cars_on_vassar.png) |
+|:--:|
+| Range measurements of cars driving by |
+
+### Synthetic Aperture Radar
+
+The final experiment we ran was synthetic aperture radar (SAR) imaging, which involves taking multiple range measurements of an object from a moving location - we just physically moved out setup along a line.  These measurements are processed together to resolve structure, which we assume is stationary. Note that we produce 2D projections because we only moved along one dimension. We tried to image the "green building" at MIT from a breezeway connecting two other buildings looking on to it. The data we gathered is overlaid on to a Google Earth satellite image of the same location after aligning the scale and orientation and is shown below. We can see SAR is relatively noisy, but it is able to pick up the sides of some buildings that are in the line of sight.
+
+| ![SAR image of green building](/assets/coffee_can_radar/green_bldg_goog_earth_with_SAR.png) |
+|:--:|
+| SAR image of green building |
