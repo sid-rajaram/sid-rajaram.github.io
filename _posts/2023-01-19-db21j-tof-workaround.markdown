@@ -5,7 +5,7 @@ date:   2023-01-19
 usemathjax: true
 ---
 
-I set up the Duckiebot DB21J with the 4GB Jetson and the dashboard kept showing the ToF distance sensor was not detected. I posted about it on the internal teams Stack Overflow and was pointed to the workaround by the Duckitbot staff. I'm summarizing the steps here without the detailed explanation in the response.
+I set up the Duckiebot DB21J with the 4GB Jetson and the dashboard kept showing the ToF distance sensor was not detected. I posted about it on the internal teams Stack Overflow and was given a workaround by the Duckiebot staff. This post contains the steps to implementing this workaround without any explanation of why.
 
 First, the I2C bus configuration differs between the 2GB and 4GB versions of the Jetson, so we need to switch CHL6 to CHL4 - you might need to unscrew the front bumper from the bot (the three metal screws) to be able to access CHL4 cleanly.
 
