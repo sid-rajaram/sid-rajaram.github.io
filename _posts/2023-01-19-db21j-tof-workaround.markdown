@@ -47,11 +47,7 @@ For an additional test you can run the following command `i2cdetect -y -r 13` an
 You are looking for a 29, which corresponds to the ToF sensor. You can also go to the dashboard under `Robot > Components` and see a Healthy status bar.
 
 | ![Healthy status bar](/assets/db21j_tof_fix/healthy_status_bar.png) |
-|:--:|
-| Healthy status bar |
 
 Finally, screw the front bumper back on.
 
 | ![Final build](/assets/db21j_tof_fix/final_build.jpg) |
-|:--:|
-| Final build |
