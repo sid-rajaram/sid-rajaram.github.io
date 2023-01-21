@@ -26,6 +26,11 @@ theme: minima
 plugins:
   - jekyll-feed
 
+minima:
+  social_links:
+  - { platform: linkedin,  user_url: "https://www.linkedin.com/in/sidrajaram/", title: "LinkedIn"}
+  - { platform: mastodon,  user_url: "https://sigmoid.social/@apteronotus",     title: "Mastodon" }
+
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
